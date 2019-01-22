@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
   createStyles,
@@ -15,8 +15,8 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-} from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+} from '@material-ui/core';
+import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NewIcon from '@material-ui/icons/BookOutlined';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
@@ -31,37 +31,37 @@ const styles = ({ mixins, spacing }: Theme) =>
     drawer: {
       width: drawerWidth,
       flexShrink: 0,
-      whiteSpace: "nowrap"
+      whiteSpace: 'nowrap',
     },
 
     toolbar: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "flex-end",
-      padding: "0 8px",
-      ...mixins.toolbar
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      padding: '0 8px',
+      ...mixins.toolbar,
     },
 
     menuButton: {
       marginLeft: 12,
-      marginRight: 36
+      marginRight: 36,
     },
 
     main: {
       marginTop: mixins.toolbar.minHeight,
-      padding: spacing.unit * 2
-    }
+      padding: spacing.unit * 2,
+    },
   });
 
 interface State {
   open: boolean;
   newNotebookDialogOpen: boolean;
-};
+}
 
 class App extends React.Component<WithStyles<typeof styles>, State> {
   state = {
     open: false,
-    newNotebookDialogOpen: false
+    newNotebookDialogOpen: false,
   };
 
   handleDrawerOpen = () => {
@@ -75,11 +75,11 @@ class App extends React.Component<WithStyles<typeof styles>, State> {
   handleOpenNewNotebookDialog = () => {
     console.log('open dialog');
     this.setState({ newNotebookDialogOpen: true, open: false });
-  }
+  };
 
   handleNotebookDialogClose = () => {
     this.setState({ newNotebookDialogOpen: false });
-  }
+  };
 
   render() {
     const { children, classes } = this.props;
@@ -107,7 +107,7 @@ class App extends React.Component<WithStyles<typeof styles>, State> {
           onClose={this.handleDrawerClose}
           className={classes.drawer}
           classes={{
-            paper: classes.drawer
+            paper: classes.drawer,
           }}
         >
           <div className={classes.toolbar}>
@@ -118,7 +118,7 @@ class App extends React.Component<WithStyles<typeof styles>, State> {
           <Divider />
 
           <List>
-              <ListItem button onClick={this.handleOpenNewNotebookDialog}>
+            <ListItem button onClick={this.handleOpenNewNotebookDialog}>
               <ListItemIcon>
                 <NewIcon />
               </ListItemIcon>
@@ -137,8 +137,10 @@ class App extends React.Component<WithStyles<typeof styles>, State> {
         </Drawer>
 
         <main className={classes.main}>{children}</main>
-        <NewNotebookDialog open={newNotebookDialogOpen} onClose={this.handleNotebookDialogClose}/>
-        
+        <NewNotebookDialog
+          open={newNotebookDialogOpen}
+          onClose={this.handleNotebookDialogClose}
+        />
       </React.Fragment>
     );
   }

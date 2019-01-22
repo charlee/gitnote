@@ -1,6 +1,9 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import * as Electron from 'electron';
+import * as path from 'path';
+import * as fs from 'fs';
+
 import {
   createStyles,
   withStyles,
@@ -55,7 +58,7 @@ class NewNotebookDialog extends React.Component<Props, StateWithError> {
     },
   };
 
-  handleCreate = () => {
+  handleCreate = async () => {
     const { onClose } = this.props;
     const { name, directory } = this.state;
 
@@ -68,13 +71,45 @@ class NewNotebookDialog extends React.Component<Props, StateWithError> {
 
     if (!directory) {
       errors.directory = 'Directory name is required.';
+    } else {
+
+    }
+
+    // Check if selected directory exists
+    if (!errors.directory) {
+      try {
+        fs.statSync(directory);
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          errors.directory = 'Directory does not exist';
+        }
+      }
+    }
+
+    const pathName = path.join(directory, name);
+    // Check if name exists
+    if (!errors.directory && !errors.name) {
+      try {
+        fs.statSync(pathName);
+        errors.name = 'Notebook already exists';
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          errors.name = 'Notebook already exists';
+        }
+      }
     }
 
     if (!_.isEmpty(errors)) {
       this.setState({ errors });
     } else {
-      if (onClose) {
-        onClose();
+      // Create the notebook
+      try {
+        fs.mkdirSync(pathName);
+        if (onClose) {
+          onClose();
+        }
+      } catch (err) {
+        window.alert(`Unknown error: ${err}`);
       }
     }
   };
