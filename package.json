@@ -170,6 +170,7 @@
     "font-awesome": "^4.7.0",
     "history": "^4.6.1",
     "lodash": "^4.17.11",
+    "nodegit": "^0.24.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-redux": "^5.0.1",
