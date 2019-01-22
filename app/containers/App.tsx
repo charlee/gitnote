@@ -53,7 +53,7 @@ const styles = ({ mixins, spacing }: Theme) =>
     }
   });
 
-type State = {
+interface State {
   open: boolean;
   newNotebookDialogOpen: boolean;
 };

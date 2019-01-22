@@ -1,5 +1,6 @@
-import * as React from "react";
-import * as Electron from "electron";
+import * as React from 'react';
+import * as _ from 'lodash';
+import * as Electron from 'electron';
 import {
   createStyles,
   withStyles,
@@ -10,30 +11,33 @@ import {
   DialogContent,
   TextField,
   DialogActions,
-  Button
-} from "@material-ui/core";
+  Button,
+} from '@material-ui/core';
+import { FormState, WithErrors, FormStateError } from '../types';
 
-type State = {
+interface State extends FormState {
   name: string;
   directory: string;
-};
+}
+
+type StateWithError = WithErrors<State>;
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
     row: {
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "flex-end"
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'flex-end',
     },
 
     directoryInput: {
       flex: 1,
-      marginRight: spacing.unit
+      marginRight: spacing.unit,
     },
 
     browseButtonContainer: {
-      marginBottom: 4
-    }
+      marginBottom: 4,
+    },
   });
 
 interface Props extends WithStyles<typeof styles> {
@@ -41,17 +45,37 @@ interface Props extends WithStyles<typeof styles> {
   onClose: Function;
 }
 
-class NewNotebookDialog extends React.Component<Props, State> {
-  state = {
-    name: "",
-    directory: ""
+class NewNotebookDialog extends React.Component<Props, StateWithError> {
+  state: StateWithError = {
+    name: '',
+    directory: '',
+    errors: {
+      name: '',
+      directory: '',
+    },
   };
 
   handleCreate = () => {
     const { onClose } = this.props;
+    const { name, directory } = this.state;
 
-    if (onClose) {
-      onClose();
+    const errors: FormStateError<State> = {};
+
+    // Check if directory and name are entered
+    if (!name) {
+      errors.name = 'Notebook name is required.';
+    }
+
+    if (!directory) {
+      errors.directory = 'Directory name is required.';
+    }
+
+    if (!_.isEmpty(errors)) {
+      this.setState({ errors });
+    } else {
+      if (onClose) {
+        onClose();
+      }
     }
   };
 
@@ -66,8 +90,8 @@ class NewNotebookDialog extends React.Component<Props, State> {
     const dirs = Electron.remote.dialog.showOpenDialog(
       Electron.remote.getCurrentWindow(),
       {
-        properties: ["openDirectory"]
-      }
+        properties: ['openDirectory'],
+      },
     );
 
     if (dirs && dirs.length) {
@@ -75,15 +99,19 @@ class NewNotebookDialog extends React.Component<Props, State> {
     }
   };
 
+  getErorrMessage(key: keyof FormStateError<State>) {
+    return this.state.errors[key];
+  }
+
   handleChange = (key: keyof State) => (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     this.setState({ [key]: event.target.value } as Pick<State, keyof State>);
   };
 
   render() {
     const { classes, open } = this.props;
-    const { name, directory } = this.state;
+    const { name, directory, errors } = this.state;
 
     return (
       <Dialog open={open}>
@@ -96,8 +124,10 @@ class NewNotebookDialog extends React.Component<Props, State> {
               id="name"
               label="Notebook Name"
               fullWidth
+              error={Boolean(errors.name)}
+              helperText={this.getErorrMessage('name')}
               value={name}
-              onChange={this.handleChange("name")}
+              onChange={this.handleChange('name')}
             />
           </div>
           <div className={classes.row}>
@@ -107,8 +137,10 @@ class NewNotebookDialog extends React.Component<Props, State> {
               id="directory"
               label="Create under directory"
               fullWidth
+              error={Boolean(errors.directory)}
+              helperText={this.getErorrMessage('directory')}
               value={directory}
-              onChange={this.handleChange("directory")}
+              onChange={this.handleChange('directory')}
             />
             <div className={classes.browseButtonContainer}>
               <Button
