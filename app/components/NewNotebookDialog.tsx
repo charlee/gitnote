@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as Electron from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as Git from 'nodegit';
 
 import {
   createStyles,
